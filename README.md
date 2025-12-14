@@ -2,6 +2,8 @@
 
 A comprehensive Angular demo application showcasing containerization concepts, featuring information about container benefits and a detailed comparison between Azure Container Apps and Azure Kubernetes Service (AKS).
 
+![Container Demo Screenshot](https://github.com/user-attachments/assets/b1a56651-80e9-472f-a700-b88452b6fd7a)
+
 ## Features
 
 - 🐳 **Container Benefits Overview**: Interactive cards showcasing the key benefits of using containers
@@ -60,12 +62,23 @@ Run with custom background color:
 docker run -p 8080:80 -e BACKGROUND_COLOR="#e3f2fd" container-demo:latest
 ```
 
+Using docker-compose:
+```bash
+# With default color
+docker-compose up
+
+# With custom color
+BACKGROUND_COLOR="#fff3e0" docker-compose up
+```
+
 Access the application at `http://localhost:8080`
 
 ### Environment Variables
 
 - `BACKGROUND_COLOR`: Controls the page background color (default: `#ffffff`)
   - Try colors like: `#e3f2fd` (light blue), `#fff3e0` (light orange), `#f3e5f5` (light purple), `#e8f5e9` (light green)
+
+See `.env.example` for more color examples.
 
 ## GitHub Container Registry
 
@@ -104,7 +117,9 @@ The project includes a GitHub Actions workflow (`.github/workflows/build-and-pus
 │   └── angular.json        # Angular configuration
 ├── Dockerfile              # Multi-stage Docker build
 ├── nginx.conf             # Nginx configuration for production
+├── docker-compose.yml     # Docker Compose configuration
 ├── .dockerignore          # Docker ignore patterns
+├── .env.example           # Example environment variables
 └── .github/
     └── workflows/
         └── build-and-push.yml  # CI/CD pipeline
