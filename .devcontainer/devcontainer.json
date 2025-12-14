@@ -1,0 +1,55 @@
+{
+  "name": "Angular Container Demo Dev Environment",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bookworm",
+  
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "enableNonRootDocker": "true",
+      "moby": "true"
+    },
+    "ghcr.io/devcontainers/features/azure-cli:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "version": "latest"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "angular.ng-template",
+        "ms-azuretools.vscode-docker",
+        "ms-vscode.azure-account",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "typescript.updateImportsOnFileMove.enabled": "always",
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+      }
+    }
+  },
+
+  "forwardPorts": [4200, 8080],
+  
+  "portsAttributes": {
+    "4200": {
+      "label": "Angular Dev Server",
+      "onAutoForward": "notify"
+    },
+    "8080": {
+      "label": "Docker Container",
+      "onAutoForward": "notify"
+    }
+  },
+
+  "postCreateCommand": "if [ -d container-demo ]; then cd container-demo && npm install; fi",
+
+  "remoteUser": "node"
+}

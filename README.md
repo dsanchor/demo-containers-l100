@@ -14,6 +14,26 @@ A comprehensive Angular demo application showcasing containerization concepts, f
 
 ## Quick Start
 
+### Using Dev Container (Recommended)
+
+This repository includes a complete Dev Container configuration with all necessary tools pre-installed:
+
+1. Prerequisites:
+   - [VS Code](https://code.visualstudio.com/)
+   - [Docker Desktop](https://www.docker.com/products/docker-desktop)
+   - [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+
+2. Open this repository in VS Code and click "Reopen in Container" when prompted
+
+3. The container includes:
+   - ✅ Node.js 20 runtime
+   - ✅ Docker-in-Docker support
+   - ✅ Azure CLI
+   - ✅ GitHub Copilot
+   - ✅ All dependencies automatically installed
+
+See [.devcontainer/README.md](.devcontainer/README.md) for more details.
+
 ### Running Locally
 
 1. Navigate to the Angular application directory:
