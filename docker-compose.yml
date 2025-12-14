@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  container-demo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      - BACKGROUND_COLOR=${BACKGROUND_COLOR:-#ffffff}
+    restart: unless-stopped

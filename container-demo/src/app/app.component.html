@@ -1,0 +1,103 @@
+<div class="container">
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">🐳</div>
+    <h1>{{ title }}</h1>
+    <p class="subtitle">Learn about containerization and Azure container services</p>
+  </header>
+
+  <!-- Introduction Section -->
+  <section class="intro-section">
+    <h2>What are Containers?</h2>
+    <p>
+      Containers are lightweight, standalone packages that include everything needed to run an application: 
+      code, runtime, system tools, libraries, and settings. They provide a consistent and reproducible 
+      environment across different computing environments.
+    </p>
+  </section>
+
+  <!-- Benefits Section -->
+  <section class="benefits-section">
+    <h2>Benefits of Using Containers</h2>
+    <div class="benefits-grid">
+      <div class="benefit-card" *ngFor="let benefit of containerBenefits">
+        <div class="benefit-icon">{{ benefit.icon }}</div>
+        <h3>{{ benefit.title }}</h3>
+        <p>{{ benefit.description }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Azure Container Services Comparison -->
+  <section class="comparison-section">
+    <h2>Azure Container Apps vs Azure Kubernetes Service (AKS)</h2>
+    <p class="comparison-intro">
+      Azure offers two primary container hosting solutions. Here's a detailed comparison to help you choose:
+    </p>
+    
+    <div class="comparison-table">
+      <div class="table-header">
+        <div class="col-category">Feature</div>
+        <div class="col-aca">
+          <div class="service-badge aca-badge">Container Apps</div>
+        </div>
+        <div class="col-aks">
+          <div class="service-badge aks-badge">AKS</div>
+        </div>
+      </div>
+      
+      <div class="table-row" *ngFor="let item of comparisonData">
+        <div class="col-category">
+          <strong>{{ item.category }}</strong>
+        </div>
+        <div class="col-aca">{{ item.aca }}</div>
+        <div class="col-aks">{{ item.aks }}</div>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+      <div class="summary-card aca-card">
+        <h3>✅ Choose Azure Container Apps if:</h3>
+        <ul>
+          <li>You want a serverless container experience</li>
+          <li>You need automatic scaling to zero</li>
+          <li>You prefer minimal operational overhead</li>
+          <li>Your app is event-driven or microservices-based</li>
+          <li>You want to focus on code, not infrastructure</li>
+        </ul>
+      </div>
+      
+      <div class="summary-card aks-card">
+        <h3>✅ Choose AKS if:</h3>
+        <ul>
+          <li>You need full Kubernetes control and flexibility</li>
+          <li>You have complex networking requirements</li>
+          <li>You're running stateful applications</li>
+          <li>You need custom Kubernetes resources</li>
+          <li>You have specific compliance requirements</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Environment Variable Demo -->
+  <section class="env-demo-section">
+    <h2>🎨 Environment Variable Demo</h2>
+    <p>
+      This page's background color is controlled by the <code>BACKGROUND_COLOR</code> environment variable.
+    </p>
+    <div class="env-info">
+      <p><strong>Current Background Color:</strong> <span class="color-box" [style.backgroundColor]="backgroundColor"></span> {{ backgroundColor }}</p>
+      <p class="env-hint">
+        💡 Try setting different colors like: <code>#e3f2fd</code>, <code>#fff3e0</code>, <code>#f3e5f5</code>, or <code>#e8f5e9</code>
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>🚀 Powered by Angular and Container Technology</p>
+    <p class="footer-small">Demo application for showcasing containerization concepts</p>
+  </footer>
+</div>
