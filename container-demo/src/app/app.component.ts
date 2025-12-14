@@ -96,18 +96,10 @@ export class AppComponent implements OnInit {
   ];
 
   ngOnInit() {
-    // Read background color from environment variable
-    // In production, this would be injected during container startup
-    const bgColor = window.ENV_BACKGROUND_COLOR || 
-                     this.getEnvVariable('BACKGROUND_COLOR') || 
-                     '#ffffff';
+    // Read background color from environment variable injected at runtime
+    const bgColor = window.ENV_BACKGROUND_COLOR || '#ffffff';
     this.backgroundColor = bgColor;
     this.applyBackgroundColor();
-  }
-
-  private getEnvVariable(key: string): string | null {
-    // This will be replaced during build with actual environment variables
-    return null;
   }
 
   private applyBackgroundColor() {

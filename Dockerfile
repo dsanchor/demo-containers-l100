@@ -24,12 +24,10 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Copy built application from build stage
 COPY --from=build /app/dist/container-demo/browser /usr/share/nginx/html
 
-# Create env-config template
-RUN echo '(function(window) {' > /usr/share/nginx/html/assets/env-config.template.js && \
-    echo '  window.ENV_BACKGROUND_COLOR = "${BACKGROUND_COLOR}";' >> /usr/share/nginx/html/assets/env-config.template.js && \
-    echo '})(this);' >> /usr/share/nginx/html/assets/env-config.template.js
+# Copy env-config template
+COPY env-config.template.js /usr/share/nginx/html/assets/env-config.template.js
 
-# Create a script to inject environment variables at runtime
+# Create a script to inject environment variables at runtime using envsubst
 RUN echo '#!/bin/sh' > /docker-entrypoint.d/40-envsubst-on-env-config.sh && \
     echo 'set -e' >> /docker-entrypoint.d/40-envsubst-on-env-config.sh && \
     echo 'envsubst < /usr/share/nginx/html/assets/env-config.template.js > /usr/share/nginx/html/assets/env-config.js' >> /docker-entrypoint.d/40-envsubst-on-env-config.sh && \
