@@ -24,12 +24,16 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Copy built application from build stage
 COPY --from=build /app/dist/container-demo/browser /usr/share/nginx/html
 
-# Copy the env-config script
-COPY container-demo/src/assets/env-config.js /usr/share/nginx/html/assets/
+# Create env-config template
+RUN echo '(function(window) {' > /usr/share/nginx/html/assets/env-config.template.js && \
+    echo '  window.ENV_BACKGROUND_COLOR = "${BACKGROUND_COLOR}";' >> /usr/share/nginx/html/assets/env-config.template.js && \
+    echo '})(this);' >> /usr/share/nginx/html/assets/env-config.template.js
 
 # Create a script to inject environment variables at runtime
 RUN echo '#!/bin/sh' > /docker-entrypoint.d/40-envsubst-on-env-config.sh && \
-    echo 'echo "window.ENV_BACKGROUND_COLOR = \"${BACKGROUND_COLOR:-#ffffff}\";" > /usr/share/nginx/html/assets/env-config.js' >> /docker-entrypoint.d/40-envsubst-on-env-config.sh && \
+    echo 'set -e' >> /docker-entrypoint.d/40-envsubst-on-env-config.sh && \
+    echo 'envsubst < /usr/share/nginx/html/assets/env-config.template.js > /usr/share/nginx/html/assets/env-config.js' >> /docker-entrypoint.d/40-envsubst-on-env-config.sh && \
+    echo 'echo "Environment variables injected into env-config.js"' >> /docker-entrypoint.d/40-envsubst-on-env-config.sh && \
     chmod +x /docker-entrypoint.d/40-envsubst-on-env-config.sh
 
 # Expose port 80

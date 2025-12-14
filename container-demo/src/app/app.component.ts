@@ -1,6 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+// Extend Window interface for type safety
+declare global {
+  interface Window {
+    ENV_BACKGROUND_COLOR?: string;
+  }
+}
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -90,8 +97,8 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     // Read background color from environment variable
-    // In production, this would be injected during build time
-    const bgColor = (window as any).ENV_BACKGROUND_COLOR || 
+    // In production, this would be injected during container startup
+    const bgColor = window.ENV_BACKGROUND_COLOR || 
                      this.getEnvVariable('BACKGROUND_COLOR') || 
                      '#ffffff';
     this.backgroundColor = bgColor;
