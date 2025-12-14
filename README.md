@@ -19,6 +19,7 @@ A comprehensive Angular demo application showcasing containerization concepts, f
 This repository includes a complete Dev Container configuration with all necessary tools pre-installed:
 
 1. Prerequisites:
+
    - [VS Code](https://code.visualstudio.com/)
    - [Docker Desktop](https://www.docker.com/products/docker-desktop)
    - [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
@@ -37,16 +38,19 @@ See [.devcontainer/README.md](.devcontainer/README.md) for more details.
 ### Running Locally
 
 1. Navigate to the Angular application directory:
+
 ```bash
 cd container-demo
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Run the development server:
+
 ```bash
 npm start
 ```
@@ -73,16 +77,19 @@ docker build -t container-demo:latest .
 ### Running the Container
 
 Run with default background color (white):
+
 ```bash
 docker run -p 8080:80 container-demo:latest
 ```
 
 Run with custom background color:
+
 ```bash
 docker run -p 8080:80 -e BACKGROUND_COLOR="#e3f2fd" container-demo:latest
 ```
 
 Using docker-compose:
+
 ```bash
 # With default color
 docker-compose up
@@ -116,9 +123,134 @@ docker pull ghcr.io/dsanchor/demo-containers-l100:latest
 docker run -p 8080:80 -e BACKGROUND_COLOR="#fff3e0" ghcr.io/dsanchor/demo-containers-l100:latest
 ```
 
+## Deploying to Azure Container Apps
+
+Azure Container Apps provides a simple way to deploy containerized applications without managing infrastructure. Here's how to deploy this application using the Azure CLI.
+
+### Prerequisites
+
+- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) installed
+- An active Azure subscription
+- Docker image available (either built locally or from GitHub Container Registry)
+
+### Step 1: Initialize Environment Variables
+
+First, set up the required environment variables for your deployment:
+
+```bash
+# Set your Azure subscription (replace with your subscription ID)
+az account set --subscription "YOUR_SUBSCRIPTION_ID"
+
+# Initialize environment variables
+RESOURCE_GROUP="demo-containers-l100-rg"
+LOCATION="eastus"
+CONTAINER_APP_NAME="container-demo-app"
+CONTAINER_ENVIRONMENT="container-demo-env"
+CONTAINER_IMAGE="ghcr.io/dsanchor/demo-containers-l100:latest"
+```
+
+### Step 2: Create Resource Group
+
+```bash
+az group create \
+  --name $RESOURCE_GROUP \
+  --location $LOCATION
+```
+
+### Step 3: Create Container Apps Environment
+
+[What is an Azure Container Apps Environment?](https://learn.microsoft.com/en-us/azure/container-apps/environment)
+
+```bash
+az containerapp env create \
+  --name $CONTAINER_ENVIRONMENT \
+  --resource-group $RESOURCE_GROUP \
+  --location $LOCATION
+```
+
+### Step 4: Deploy the Container App
+
+Deploy the application with a custom background color:
+
+```bash
+az containerapp create \
+  --name $CONTAINER_APP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --environment $CONTAINER_ENVIRONMENT \
+  --image $CONTAINER_IMAGE \
+  --target-port 80 \
+  --ingress external \
+  --env-vars BACKGROUND_COLOR="#e3f2fd" \
+  --query properties.configuration.ingress.fqdn \
+  --output tsv
+```
+
+The command will output the fully qualified domain name (FQDN) where your application is accessible.
+
+### Step 5: Access Your Application
+
+Open the URL returned by the previous command in your browser. The application should be running with the custom background color.
+
+### Updating the Application
+
+To update the application with a different image or environment variable:
+
+```bash
+az containerapp update \
+  --name $CONTAINER_APP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --image $CONTAINER_IMAGE \
+  --set-env-vars BACKGROUND_COLOR="#fff3e0"
+```
+
+### Blue/Green Deployment with Traffic Splitting
+
+You can deploy multiple revisions and split traffic between them. Here's how to set up a 60/40 split with different background colors:
+
+```bash
+# Enable multiple revision mode
+az containerapp revision set-mode \
+  --name $CONTAINER_APP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --mode multiple
+
+# Create first revision with blue background (60% traffic)
+az containerapp update \
+  --name $CONTAINER_APP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --image $CONTAINER_IMAGE \
+  --set-env-vars BACKGROUND_COLOR="#e3f2fd" \
+  --revision-suffix blue
+
+# Create second revision with soft orange background (40% traffic)
+az containerapp update \
+  --name $CONTAINER_APP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --image $CONTAINER_IMAGE \
+  --set-env-vars BACKGROUND_COLOR="#fff3e0" \
+  --revision-suffix orange
+
+# Split traffic: 60% to blue, 40% to orange
+az containerapp ingress traffic set \
+  --name $CONTAINER_APP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --revision-weight ${CONTAINER_APP_NAME}--blue=60 ${CONTAINER_APP_NAME}--orange=40
+```
+
+Now when you refresh your application, you'll see the blue background 60% of the time and the soft orange background 40% of the time.
+
+### Clean Up Resources
+
+When you're done, delete the resource group to avoid incurring charges:
+
+```bash
+az group delete --name $RESOURCE_GROUP --yes --no-wait
+```
+
 ## CI/CD
 
 The project includes a GitHub Actions workflow (`.github/workflows/build-and-push.yml`) that:
+
 - Builds the Docker image on every push to main/master
 - Pushes the image to GitHub Container Registry
 - Creates multi-platform images (linux/amd64, linux/arm64)
