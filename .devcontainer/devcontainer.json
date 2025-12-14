@@ -49,11 +49,7 @@
     }
   },
 
-  "postCreateCommand": "cd container-demo && npm install",
+  "postCreateCommand": "if [ -d container-demo ]; then cd container-demo && npm install; fi",
 
-  "remoteUser": "node",
-
-  "mounts": [
-    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
-  ]
+  "remoteUser": "node"
 }
