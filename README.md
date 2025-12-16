@@ -241,12 +241,18 @@ Now when you refresh your application, you'll see the blue background 60% of the
 
 ## Deploying to Azure Kubernetes Service (AKS)
 
+First, ensure you have an AKS cluster set up. You can create one using the Azure CLI:
+
+```bash
+AKS="demol100"
+az aks create --resource-group $RESOURCE_GROUP --name $AKS --sku automatic
+```
+
 NOTE: I will use a hardcoded DNS entry for this demo. In a production scenario, you would typically use a domain you own, linking the DNS zone to your AKS cluster leveraging app routing addon and DNS integration.
 
 ### Step 1: Connect to cluster
 
 ```bash
-AKS="demol100"
 az login --use-device-code
 az aks get-credentials --resource-group $RESOURCE_GROUP --name $AKS
 ```
@@ -264,14 +270,13 @@ rm kubectl
 Also, download and install `kubelogin` to manage authentication to the cluster:
 
 ```bash
-# Download and install kubelogin
 curl -LO https://github.com/Azure/kubelogin/releases/latest/download/kubelogin-linux-amd64.zip
 unzip kubelogin-linux-amd64.zip
 sudo mv bin/linux_amd64/kubelogin /usr/local/bin/
 rm -rf kubelogin-linux-amd64.zip bin/
 ```
 
-Create resources in AKS:
+Create resources in AKS. Before applying the manifests, make sure to update the `host` field in `k8s/ingress.yaml` with your desired domain:
 
 ```bash
 kubectl create namespace demo-containers-l100
@@ -280,17 +285,21 @@ kubectl apply -f k8s/ingress.yaml -n demo-containers-l100
 kubectl apply -f k8s/deployment.yaml -n demo-containers-l100
 ```
 
-Now, with a deployment that follows the policies of the cluster
+The above deployment does not comply with the policies defined in the cluster, so it will be in `Pending` state. To fix this, we need to deploy a policy-compliant version. This is because AKS automatic clusters may have policies enabled by default to enforce best practices.
+
+Now, deploy the policy-compliant version:
 
 ```bash
 kubectl apply -f k8s/deployment-policycomplaint.yaml -n demo-containers-l100
 ```
 
-Get host:
+Get ingress host:
 
 ```bash
 kubectl get ingress -n demo-containers-l100
 ```
+
+Test the application by navigating to the host specified in the ingress resource.
 
 ### Clean Up Resources
 
