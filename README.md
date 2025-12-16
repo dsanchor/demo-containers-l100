@@ -239,6 +239,59 @@ az containerapp ingress traffic set \
 
 Now when you refresh your application, you'll see the blue background 60% of the time and the soft orange background 40% of the time.
 
+## Deploying to Azure Kubernetes Service (AKS)
+
+NOTE: I will use a hardcoded DNS entry for this demo. In a production scenario, you would typically use a domain you own, linking the DNS zone to your AKS cluster leveraging app routing addon and DNS integration.
+
+### Step 1: Connect to cluster
+
+```bash
+AKS="demol100"
+az login --use-device-code
+az aks get-credentials --resource-group $RESOURCE_GROUP --name $AKS
+```
+
+### Step 2: Create app
+
+We will use `kubectl` to manage kubernetes resources. You can get it and install it running:
+
+```bash
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+rm kubectl
+```
+
+Also, download and install `kubelogin` to manage authentication to the cluster:
+
+```bash
+# Download and install kubelogin
+curl -LO https://github.com/Azure/kubelogin/releases/latest/download/kubelogin-linux-amd64.zip
+unzip kubelogin-linux-amd64.zip
+sudo mv bin/linux_amd64/kubelogin /usr/local/bin/
+rm -rf kubelogin-linux-amd64.zip bin/
+```
+
+Create resources in AKS:
+
+```bash
+kubectl create namespace demo-containers-l100
+kubectl apply -f k8s/service.yaml -n demo-containers-l100
+kubectl apply -f k8s/ingress.yaml -n demo-containers-l100
+kubectl apply -f k8s/deployment.yaml -n demo-containers-l100
+```
+
+Now, with a deployment that follows the policies of the cluster
+
+```bash
+kubectl apply -f k8s/deployment-policycomplaint.yaml -n demo-containers-l100
+```
+
+Get host:
+
+```bash
+kubectl get ingress -n demo-containers-l100
+```
+
 ### Clean Up Resources
 
 When you're done, delete the resource group to avoid incurring charges:
